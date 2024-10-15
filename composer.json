@@ -11,5 +11,7 @@
             "email": "alexeyhong10@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "dilab/resumable.php": "^0.1.4"
+    }
 }
