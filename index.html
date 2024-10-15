@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumable File Upload</title>
+</head>
+<body>
+
+<div style="display:flex; justify-content: center; flex-wrap: wrap; margin-top: 10%">
+    <div>
+        <input type="file" id="file"/>
+        <button id="uploadBtn">Загрузить</button>
+    </div>
+
+    <div id="uploadProgress" style="width: 100%; text-align: center;">Прогресс: 0%</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/resumablejs@1.1.0/resumable.min.js"></script>
+
+<script>
+    const r = new Resumable({
+        target: '/upload.php', // URL до сервера
+        chunkSize: 1 * 1024 * 1024, // 1MB чанки
+        simultaneousUploads: 3, // Количество одновременных загрузок
+        testChunks: true, // Проверка существующих чанков на сервере
+        throttleProgressCallbacks: 1, // Прогресс обновляется 1 раз в секунду
+    });
+
+    r.assignBrowse(document.getElementById('file')); // Привязываем к input
+
+    r.on('fileAdded', function (file) {
+        // Старт загрузки после добавления файла
+        r.upload();
+    });
+
+    r.on('fileProgress', function (file) {
+        // Обновляем прогресс загрузки
+        const progress = Math.floor(file.progress() * 100);
+        document.getElementById('uploadProgress').innerText = `Прогресс: ${progress}%`;
+    });
+
+    r.on('complete', function () {
+        // Когда загрузка завершена
+        document.getElementById('uploadProgress').innerText = 'Загрузка завершена!';
+    });
+
+    r.on('error', function (message, file) {
+        console.log('Ошибка загрузки:', message);
+    });
+</script>
+
+</body>
+</html>
